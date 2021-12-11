@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const request = require('request')
 
+import type {Stock} from '../src/stockInterface';
 
 router.get('/', (req: any, res: any) => {
     res.status(200).send({
@@ -28,9 +29,12 @@ router.post('/:symbol', (req: any, res: any) => {
       if (error) throw new Error(error);
     
       res.status(200).send(body);
-      console.log(body)
+      
+      const obj: Stock = JSON.parse(body);
+      console.log(obj.price.marketCap.longFmt);
     });
 
   });
   
 module.exports = router
+
