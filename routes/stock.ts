@@ -29,9 +29,12 @@ router.post('/:symbol', (req: any, res: any) => {
       if (error) throw new Error(error);
     
       res.status(200).send(body);
+      try{
+        const obj: Stock = JSON.parse(body);
+        console.log(obj);
+      }catch{console.log(`No existe ${symbol}`);}
       
-      const obj: Stock = JSON.parse(body);
-      console.log(obj.price.marketCap.longFmt);
+
     });
 
   });
