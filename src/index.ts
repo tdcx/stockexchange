@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({
 connectToDatabase()
     .then(() => {
         app.use("/stocks", stockRouter);
-
+        
         app.listen(PORT, () => {
             logger.info(`Server started at http://localhost:${PORT}`);
         });
@@ -66,12 +66,13 @@ connectToDatabase()
                 request(clientServerOptions, function (error:any, response:any) {
                     logger.info(error,response.body);
                 });
-                res.redirect("/stocks");
+                
             }
             const bod = req?.body;
             const id = Object.keys(bod)[0];
             updateClient(id);
             
+            res.redirect('/stocks');
         });
     })
     .catch((error: Error) => {

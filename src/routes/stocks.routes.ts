@@ -12,35 +12,44 @@ export const stockRouter = express.Router();
 stockRouter.use(express.json());
 // functions
 
-function getAPIData(req: Request, res: Response, sy: string){
+function getAPIData(stocks?: any){
+    var nStock = 0;
+    stocks.forEach((element: any) => {
+        const stock = element.symbol;
     
-    const options = {
-      method: 'GET',
-      url: 'https://yh-finance.p.rapidapi.com/stock/v3/get-statistics',
-      qs: {symbol: `${sy}`},
-      headers: {
-        'x-rapidapi-host': 'yh-finance.p.rapidapi.com',
-        'x-rapidapi-key': 'fa7d72b0f6mshbd0e50a1e04828cp1251e1jsn4871ee1fa168',
-        useQueryString: true
-      }
-    };
-    
-    request(options, function (error: any, response: any, body: any) {
-      if (error) throw new Error(error);
-      try{
-        const obj: Stock = JSON.parse(body);
-        logger.info(obj);
-      }catch{logger.info(`No existe ${sy}`);}
-      
 
+        const options = {
+        method: 'GET',
+        url: 'https://yh-finance.p.rapidapi.com/stock/v3/get-statistics',
+        qs: {symbol: `${stock}`},
+        headers: {
+            'x-rapidapi-host': 'yh-finance.p.rapidapi.com',
+            'x-rapidapi-key': 'fa7d72b0f6mshbd0e50a1e04828cp1251e1jsn4871ee1fa168',
+            useQueryString: true
+        }
+        };
+        
+        request(options, function (error: any, response: any, body: any) {
+        if (error) throw new Error(error);
+        try{
+            const obj: Stock = JSON.parse(body);
+            console.log(`todo bien, ${body}`)
+            
+            //stockRouter.locals.myVar + nStock = body;
+            nStock = nStock + 1;
+        }catch{logger.info(`No existe ${stock}`);}
     });
+});
 }
 
 
 // GET
-stockRouter.get("/", async (req: Request, res: Response) => { 
+stockRouter.get("/", async (req: Request, res: Response) => {
+    
     try {
-       const stock = (await collections.stocks!.find({}).toArray()) as unknown as Stock[];
+        const stock = (await collections.stocks!.find({}).toArray()) as unknown as Stock[];
+        getAPIData(stock);
+        //console.log(apidata[0]);
         res.status(200).render("stocks", {stocks: stock});
     } catch (error:any) {
         res.status(500).send(error.message);
