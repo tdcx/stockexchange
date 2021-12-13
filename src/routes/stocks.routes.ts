@@ -5,19 +5,15 @@ import { collections } from "../services/database.service";
 import Stock from "../models/stocks";
 const request = require('request')
 import logger from "../utils/logger";
+import yahooStock from "./../stockInterface";
 
 // Global Config
 export const stockRouter = express.Router();
 
 stockRouter.use(express.json());
 // functions
-
-function getAPIData(stocks?: any){
-    var nStock = 0;
-    stocks.forEach((element: any) => {
-        const stock = element.symbol;
-    
-
+var arr: any[];
+function getAPIData( stock: string ): any {
         const options = {
         method: 'GET',
         url: 'https://yh-finance.p.rapidapi.com/stock/v3/get-statistics',
@@ -28,19 +24,14 @@ function getAPIData(stocks?: any){
             useQueryString: true
         }
         };
-        
         request(options, function (error: any, response: any, body: any) {
         if (error) throw new Error(error);
         try{
-            const obj: Stock = JSON.parse(body);
-            console.log(`todo bien, ${body}`)
-            
-            //stockRouter.locals.myVar + nStock = body;
-            nStock = nStock + 1;
+            const obj: yahooStock = JSON.parse(body);
+            console.log(obj.price.longName);
         }catch{logger.info(`No existe ${stock}`);}
     });
-});
-}
+};
 
 
 // GET
@@ -48,9 +39,10 @@ stockRouter.get("/", async (req: Request, res: Response) => {
     
     try {
         const stock = (await collections.stocks!.find({}).toArray()) as unknown as Stock[];
-        getAPIData(stock);
-        //console.log(apidata[0]);
-        res.status(200).render("stocks", {stocks: stock});
+        //console.log(stock);
+        
+        
+        res.status(200).render("stocks", {stocks: stock,});
     } catch (error:any) {
         res.status(500).send(error.message);
     }

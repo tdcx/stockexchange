@@ -54,7 +54,9 @@ connectToDatabase()
             const bod = req?.body;
             const data = {"symbol": `${bod.add}`};
             updateClient(data);
-            res.redirect('/stocks');
+            setTimeout(function() {
+                res.redirect('/stocks');
+            }, 500);
             
         });
         app.post("/stock_delete", (req: Request, res: Response) => {
@@ -71,8 +73,10 @@ connectToDatabase()
             const bod = req?.body;
             const id = Object.keys(bod)[0];
             updateClient(id);
+            setTimeout(function() {
+                res.redirect('/stocks');
+            }, 500);
             
-            res.redirect('/stocks');
         });
     })
     .catch((error: Error) => {
